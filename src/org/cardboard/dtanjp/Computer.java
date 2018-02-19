@@ -9,6 +9,8 @@ import java.util.Map;
 import Plugin.API;
 import Plugin.Plugin;
 import Plugin.PluginAssistant;
+import fileIO.FileUtil;
+import fileIO.WritingWorker;
 
 /**
  * Computer.java
@@ -22,7 +24,7 @@ public class Computer {
 	}
 	
 	/** Singleton **/
-	protected static Computer getInstance() {
+	public static Computer getInstance() {
 		if(instance == null)
 			instance = new Computer();
 		return instance;
@@ -158,14 +160,21 @@ public class Computer {
 	
 	/** Prints a debug msg + new line **/
 	public static void println(Object line) {
-		if(Config.DEBUG)
+		if(Config.DEBUG) {
 			System.out.println(line.toString());
+			if(Config.ENABLE_ERROR_LOG)
+				WritingWorker.WriteFile(Config.OUTPUT_LOG, line.toString());
+		}
 	}
 	
 	/** Prints a debug msg **/
 	public static void print(Object line) {
-		if(Config.DEBUG)
+		if(Config.DEBUG) {
 			System.out.print(line.toString());
+			
+			if(Config.ENABLE_ERROR_LOG)
+				WritingWorker.WritelnFile(Config.OUTPUT_LOG, line.toString());
+		}
 	}
 	
 	/** Returns the OS instance **/
@@ -183,6 +192,7 @@ public class Computer {
 		return library.get(name);
 	}
 	
+	/** Returns the library **/
 	public Map<String, API> GetLibrary() {
 		return library;
 	}
@@ -191,8 +201,6 @@ public class Computer {
 	private static Computer instance;
 	public boolean REQUEST_SHUTDOWN = false;
 	public int sleepMS = 1; //Milliseconds of sleep
-	
-	//Plugins
 	private String osName = "";
 	private Plugin os = null;
 	private Map<String,API> library = new HashMap<>();

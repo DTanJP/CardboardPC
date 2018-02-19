@@ -11,7 +11,9 @@ public class Config {
 
 	/** DEBUG **/
 	public static boolean DEBUG = true;
+	public static boolean ENABLE_ERROR_LOG = true;
 	
+	public final static File OUTPUT_LOG = new File("./OUTPUT.txt");
 	/** Environment directories **/
 	public final static File OS_DIR = new File("./OS/");
 	public final static File DRIVER_DIR = new File("./Drivers/");

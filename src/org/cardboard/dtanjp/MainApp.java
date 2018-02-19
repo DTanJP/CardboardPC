@@ -3,6 +3,8 @@ package org.cardboard.dtanjp;
 
 import java.util.concurrent.TimeUnit;
 
+import fileIO.WritingWorker;
+
 /**
  * MainApp.java
  * 
@@ -22,6 +24,10 @@ public class MainApp {
 	
 	/** Methods **/
 	private void Initialize() {
+		if(Config.ENABLE_ERROR_LOG && Config.DEBUG) {
+			if(Config.OUTPUT_LOG.exists() && Config.OUTPUT_LOG.isFile())
+				WritingWorker.ClearFile(Config.OUTPUT_LOG);
+		}
 		println("["+Config.COMPUTER_NAME+"]: Initializing...");
 		if(SetupRequired()) {
 			println("["+Config.COMPUTER_NAME+"]: Creating environment...");
@@ -57,7 +63,7 @@ public class MainApp {
 		while(!computer.REQUEST_SHUTDOWN) {
 			computer.GetOS().Update();
 			try {
-				TimeUnit.MILLISECONDS.sleep(computer.sleepMS);
+				TimeUnit.MILLISECONDS.sleep(Math.abs(computer.sleepMS));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -82,14 +88,21 @@ public class MainApp {
 	
 	/** Prints a debug msg + new line **/
 	public static void println(Object line) {
-		if(Config.DEBUG)
+		if(Config.DEBUG) {
 			System.out.println(line.toString());
+			if(Config.ENABLE_ERROR_LOG)
+				WritingWorker.WritelnFile(Config.OUTPUT_LOG, line.toString());
+		}
 	}
 	
 	/** Prints a debug msg **/
 	public static void print(Object line) {
-		if(Config.DEBUG)
+		if(Config.DEBUG) {
 			System.out.print(line.toString());
+			
+			if(Config.ENABLE_ERROR_LOG)
+				WritingWorker.WriteFile(Config.OUTPUT_LOG, line.toString());
+		}
 	}
 	
 	/** Variables **/
