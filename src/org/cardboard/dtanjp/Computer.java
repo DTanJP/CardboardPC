@@ -32,7 +32,7 @@ public class Computer {
 	protected void InitializeOS() {
 		//Exit if no OS is set
 		if(os == null) {
-			MainApp.println("[Computer]: <ScanOS>: Cannot find any OS plugins. Shutting down...");
+			MainApp.println("[Computer]: <InitializeOS>: Cannot find any OS plugins. Shutting down...");
 			System.exit(0);
 		}
 		
