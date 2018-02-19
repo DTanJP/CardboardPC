@@ -1,5 +1,5 @@
 # CardboardPC
-A simple basic java plugin system.
+A lightweight java plugin system.
 
 Purpose:
 A plugin driven application that runs the OS plugin which then handles the rest of the other plugins.
