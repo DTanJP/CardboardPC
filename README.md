@@ -9,6 +9,7 @@ There you must place a plugin into the OS folder.
 Then rerun CardboardPC again and it will start.
 
 FAQ:
+
 Q. Can I put more than 1 plugin in the OS folder?
 A. No
 
