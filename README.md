@@ -31,3 +31,7 @@ A. It's simple, lightweight and not a polished piece of software. It's mainly us
 Q. Can CardboardPC do anything else without a OS?
 
 A. No
+
+Q. Does this come with a OS?
+
+A. No. Not yet...
