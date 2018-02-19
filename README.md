@@ -2,7 +2,7 @@
 A lightweight java plugin system.
 
 Purpose:
-A plugin driven application that runs the OS plugin which then handles the rest of the other plugins.
+A plugin driven application that runs the OS plugin which then handles the rest of the other plugins. Designed to give most of the control to the OS.
 
 To use:
 Upon first run, CardboardPC will set up the necessary directories and then close.
@@ -35,3 +35,7 @@ A. No
 Q. Does this come with a OS?
 
 A. No. Not yet...
+
+Q. What's the difference between a driver and a application?
+
+A. Applications only runs when the user instructs the OS to run it. Drivers are always being runned. However since most of the control is left to the OS. This is just a concept and in no way enforceable.
