@@ -1,8 +1,5 @@
 package org.cardboard.dtanjp;
 
-
-import java.util.concurrent.TimeUnit;
-
 import fileIO.WritingWorker;
 
 /**
@@ -60,13 +57,34 @@ public class MainApp {
 		println("* OS: "+computer.GetOSName());
 		println("* APIs: "+computer.GetLibrary().size());
 		println("==========================");
-		while(!computer.REQUEST_SHUTDOWN) {
-			computer.GetOS().Update();
-			try {
-				TimeUnit.MILLISECONDS.sleep(Math.abs(computer.sleepMS));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+		long lastLoopTime = System.nanoTime();
+		final long OPTIMAL_TIME = 1000000000 / Config.FPS_TARGET_RATE;
+		try {
+			while(!computer.REQUEST_SHUTDOWN) {
+			    long now = System.nanoTime();
+			    long updateLength = now - lastLoopTime;
+			    lastLoopTime = now;
+			    Config.delta = updateLength / ((double)OPTIMAL_TIME);
+			    
+			    // update the frame counter
+			    lastFpsTime += updateLength;
+			    Config.FPS++;
+			      
+			    // update our FPS counter if a second has passed since we last recorded
+			    if (lastFpsTime >= 1000000000) {
+			         lastFpsTime = 0;
+			         Config.FPS = 0;
+			    }
+			    
+			    //Update
+			    computer.GetOS().Update();
+			    
+			    long sleepTime = (lastLoopTime-System.nanoTime() + OPTIMAL_TIME)/1000000;
+				if(sleepTime > 0)
+					Thread.sleep(sleepTime);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		computer.GetOS().Destruct();
 		println("==========[End]===========");
@@ -108,4 +126,5 @@ public class MainApp {
 	/** Variables **/
 	private static MainApp instance = null;
 	private static Computer computer = null;
+	private long lastFpsTime = 0;
 }

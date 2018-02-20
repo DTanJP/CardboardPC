@@ -11,7 +11,7 @@ public class Config {
 
 	/** DEBUG **/
 	public static boolean DEBUG = true;
-	public static boolean ENABLE_ERROR_LOG = true;
+	public static boolean ENABLE_ERROR_LOG = false;
 	
 	public final static File OUTPUT_LOG = new File("./OUTPUT.txt");
 	/** Environment directories **/
@@ -23,4 +23,9 @@ public class Config {
 	/** Settings **/
 	public final static String COMPUTER_NAME = "Cardboard";
 	public final static double VERSION = 0.1D;
+	
+	/** Update FPS **/
+	public static final int FPS_TARGET_RATE = 60;
+	public static int FPS = 0;
+	public static double delta = 0;
 }
