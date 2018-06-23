@@ -1,8 +1,10 @@
-CardboardPC
+# CardboardPC
 
 A lightweight java plugin system.
+====================================
 
 Purpose: A plugin driven application that runs the OS plugin which then handles the rest of the other plugins. Designed to give most of the control to the OS.
+==========
 
 To use: Upon first run, CardboardPC will set up the necessary directories and then close. There you must place a plugin into the OS folder. Then rerun CardboardPC again and it will start.
 
