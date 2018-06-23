@@ -93,6 +93,7 @@ public class MainApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		//Tell the OS to shutdown
 		computer.GetOS().Destruct();
 		println("==========[End]===========");
 		System.exit(0);
