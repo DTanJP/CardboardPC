@@ -22,10 +22,6 @@ Q. What is the purpose of the OS?
 
 A. To pass messages/requests between applications and drivers
 
-Q. Why is this called CardboardPC?
-
-A. It's simple and lightweight. It's mainly used as a concept for a plugin system.
-
 Q. Can CardboardPC do anything else without a OS?
 
 A. No
@@ -37,3 +33,7 @@ A. Yes. Check out [DustOS](https://github.com/DTanJP/DustOS). A prototype OS cre
 Q. What's the difference between a driver and a application?
 
 A. Applications only runs when the user instructs the OS to run it. Drivers are always being executed. However since most of the control is left to the OS. This is just a concept and in no way enforceable. Drivers also extends the functionality of the OS.
+
+Q. Is there a prebuilt executable file that I can download?
+  
+A. Yes if you don't want to build it yourself. Download it [here](https://github.com/DTanJP/CardboardPC/tree/master/bin)
