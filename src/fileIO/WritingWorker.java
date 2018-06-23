@@ -47,7 +47,7 @@ public class WritingWorker {
 	 * Overwrites the file instead of adding onto it.
 	 * Writes multiple lines.
 	 */
-	public static void OverwriteFile(File file, String[] line) {
+	public static void OverwriteFile(File file, String... line) {
 		try (BufferedWriter worker = new BufferedWriter(new FileWriter(file, false))){
 			for(String s : line){
 				worker.write(s);
@@ -89,17 +89,6 @@ public class WritingWorker {
 		} catch (IOException ioexception) {
 		}
 	}
-
-	public static void WritelnFile(File file, String[] line) {
-		try (BufferedWriter Jwrite = new BufferedWriter(new FileWriter(file, true))){
-			for(int i=0; i<line.length; i++){
-				if(line[i] != null)
-					Jwrite.write(line[i]);
-				Jwrite.newLine();
-			}
-		} catch (IOException ioexception) {
-		}
-	}
 	
 	/**
 	 * writeFile
@@ -109,11 +98,13 @@ public class WritingWorker {
 	 * 
 	 * Writes multiple lines to the file. Does NOT clears the file. It adds onto the file.
 	 */
-	public static void WriteFile(File file, String[] line) {
+	public static void WriteFile(File file, String... line) {
 		try (BufferedWriter worker = new BufferedWriter(new FileWriter(file, true))){
 			for(int i=0; i<line.length; i++){
-				if(line[i] != null)
+				if(line[i] != null) {
 					worker.write(line[i]);
+					worker.newLine();
+				}
 			}
 		} catch (IOException ioexception) {
 		}

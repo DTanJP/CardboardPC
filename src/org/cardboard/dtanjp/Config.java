@@ -18,11 +18,10 @@ public class Config {
 	public final static File OS_DIR = new File("./OS/");
 	public final static File DRIVER_DIR = new File("./Drivers/");
 	public final static File APP_DIR = new File("./Applications/");
-	public final static File LIBRARY_DIR = new File("./Library/");
 	
 	/** Settings **/
 	public final static String COMPUTER_NAME = "Cardboard";
-	public final static double VERSION = 0.1D;
+	public final static double VERSION = 1.0D;
 	
 	/** Update FPS **/
 	public static final int FPS_TARGET_RATE = 60;

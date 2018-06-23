@@ -21,11 +21,7 @@ import fileIO.FileUtil;
 public class PluginAssistant {
 
 	public static boolean IsPlugin(Class<?> clazz) {
-		try {
-			return (clazz.newInstance() instanceof Plugin);
-		} catch (InstantiationException | IllegalAccessException | ClassCastException e) {
-			return false;
-		}
+		return Plugin.class.isAssignableFrom(clazz);
 	}
 	
 	public static Plugin AsPlugin(Class<?> clazz) {
@@ -39,7 +35,7 @@ public class PluginAssistant {
 	/** Scans a JAR for class files: Returns an array of class<?> **/
 	public static Class<?>[] ScanJar(File jarFile) {
 		//Check to make sure we are reading from a jar
-		if(!FileUtil.GetExtension(jarFile).equals("jar"))
+		if(!FileUtil.GetExtension(jarFile).toLowerCase().equals("jar"))
 			return null;
 		
 		/** Variables **/

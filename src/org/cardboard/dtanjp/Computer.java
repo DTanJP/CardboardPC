@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import Plugin.API;
+import Plugin.Application;
+import Plugin.Driver;
 import Plugin.Plugin;
 import Plugin.PluginAssistant;
 import fileIO.FileUtil;
@@ -42,75 +43,79 @@ public class Computer {
 		os.Initialize();
 	}
 	
-	/** Search the Libraries folder for any APIs **/
-	public void ScanLibraries() {
-		library.clear();
-		File[] apiFiles = FileUtil.APIFiles();
-		//println("[Computer]: <ScanLibraries()>: "+apiFiles.length+" files found.");
-		for(File file : apiFiles) {
-			if(file == null || !file.exists())
+	/** Scans the driver directory for driver plugins **/
+	public void ScanDrivers() {
+		drivers.clear();
+		File files[] = FileUtil.DriverFiles();
+		for(File file : files) {
+			if(file == null)
+				continue;
+			if(!file.exists() || !file.isFile())
 				continue;
 			
-			if(file.isDirectory()) {
-				ScanLibraries(file);
-				continue;
-			}
-			
+			boolean isDriver = false;
 			if(FileUtil.GetExtension(file).equals("jar")) {
-				//println("[Computer]: <ScanLibraries()>: Found Jar: ["+file.getName()+"]");
-				API api = new API(file.getName());
+				Driver driver = new Driver(file.getName());
 				Class<?>[] clazz = PluginAssistant.ScanJar(file);
 				for(Class<?> c : clazz) {
 					if(c == null)
 						continue;
-					api.Add(c);
+					driver.Add(c);
+					if(PluginAssistant.IsPlugin(c)) {
+						driver.SetDriverClass(c);
+						isDriver = true;
+					}
 				}
-				library.put(file.getName(), api);
+				if(isDriver)
+					drivers.put(file.getName(), driver);
 			} else if(FileUtil.GetExtension(file).equals("class")) {
-				//println("[Computer]: <ScanLibraries()>: Found Class: ["+file.getName()+"]");
-				API api = new API(file.getName());
+				Driver driver = new Driver(file.getName());
 				Class<?> clazz = PluginAssistant.LoadClassFile(file);
-				api.Add(clazz);
-				library.put(file.getName(), api);
+				driver.Add(clazz);
+				if(PluginAssistant.IsPlugin(clazz)) {
+					driver.SetDriverClass(clazz);
+					isDriver = true;
+				}
+				if(isDriver)
+					drivers.put(file.getName(), driver);
 			}
 		}
 	}
 	
-	private void ScanLibraries(File directory) {
-		if(directory == null)
-			return;
-		
-		if(!directory.isDirectory() || !directory.exists())
-			return;
-		
-		File[] apiFiles = directory.listFiles();
-		//println("[Computer]: <ScanLibraries(File)>: "+apiFiles.length+" files found.");
-		for(File file : apiFiles) {
-			if(file == null || !file.exists())
+	/** Scans the application directory for application plugins **/
+	public void ScanApplications() {
+		applications.clear();
+		File files[] = FileUtil.AppFiles();
+		for(File file : files) {
+			if(file == null)
 				continue;
-			
-			//Recursively scan all directories for class files
-			if(file.isDirectory()) {
-				ScanLibraries(file);
+			if(!file.exists() || !file.isFile())
 				continue;
-			}
-			
+			boolean isApplication = false;
 			if(FileUtil.GetExtension(file).equals("jar")) {
-				//println("[Computer]: <ScanLibraries(File)>: Found Jar: ["+file.getName()+"]");
-				API api = new API(file.getName());
+				Application app = new Application(file.getName());
 				Class<?>[] clazz = PluginAssistant.ScanJar(file);
 				for(Class<?> c : clazz) {
 					if(c == null)
 						continue;
-					api.Add(c);
+					app.Add(c);
+					if(PluginAssistant.IsPlugin(c)) {
+						app.SetApplicationClass(c);
+						isApplication = true;
+					}
 				}
-				library.put(file.getName(), api);
+				if(isApplication)
+					applications.put(file.getName(), app);
 			} else if(FileUtil.GetExtension(file).equals("class")) {
-				//println("[Computer]: <ScanLibraries(File)>: Found Jar: ["+file.getName()+"]");
-				API api = new API(file.getName());
+				Application app = new Application(file.getName());
 				Class<?> clazz = PluginAssistant.LoadClassFile(file);
-				api.Add(clazz);
-				library.put(file.getName(), api);
+				app.Add(clazz);
+				if(PluginAssistant.IsPlugin(clazz)) {
+					app.SetApplicationClass(clazz);
+					isApplication = true;
+				}
+				if(isApplication)
+					applications.put(file.getName(), app);
 			}
 		}
 	}
@@ -140,7 +145,8 @@ public class Computer {
 					if(PluginAssistant.IsPlugin(c)) {
 						//println("[Computer]: <ScanOS>: Found valid plugin: ["+file.getName()+" :: "+c.getName()+"]");
 						osplugins.add(c);
-					}
+					} else
+						osClasses.put(c.getName(), c);
 				}
 			} else if(FileUtil.GetExtension(file).equals("class")) {
 				osName = file.getName();
@@ -148,14 +154,17 @@ public class Computer {
 				if(clazz != null && PluginAssistant.IsPlugin(clazz)) {
 					//println("[Computer]: <ScanOS>: Found valid plugin: ["+file.getName()+" :: "+clazz.getName()+"]");
 					osplugins.add(clazz);
-				}
+				} else
+					osClasses.put(clazz.getName(), clazz);
 			}
 		}
 		if(osplugins.size() > 1) {
 			println("[Computer]: <ScanOS>: "+osplugins.size()+" plugins found in the OS folder. Only 1 is allowed.");
 			System.exit(0);
-		} else if(osplugins.size() == 1)
+		} else if(osplugins.size() == 1) {
 			os = PluginAssistant.AsPlugin(osplugins.get(0));
+			println("[Computer]: <ScanOS>: Found ["+osName+"]");
+		}
 	}
 	
 	/** Prints a debug msg + new line **/
@@ -187,21 +196,33 @@ public class Computer {
 		return osName;
 	}
 	
-	/** Searches for a API **/
-	public API GetAPI(String name) {
-		return library.get(name);
+	public Map<String, Driver> GetDrivers() {
+		return drivers;
 	}
 	
-	/** Returns the library **/
-	public Map<String, API> GetLibrary() {
-		return library;
+	public Map<String, Application> GetApplications() {
+		return applications;
+	}
+	
+	public int FPS() {
+		return Config.FPS;
+	}
+	
+	public Double VERSION() {
+		return Config.VERSION;
+	}
+	
+	public String COMPUTER_NAME() {
+		return Config.COMPUTER_NAME;
 	}
 	
 	/** Variables **/
 	private static Computer instance;
 	public boolean REQUEST_SHUTDOWN = false;
-	public int sleepMS = 1; //Milliseconds of sleep
 	private String osName = "";
 	private Plugin os = null;
-	private Map<String,API> library = new HashMap<>();
+	
+	public final Map<String, Class<?>> osClasses = new HashMap<>();
+	public final Map<String, Driver> drivers = new HashMap<>();
+	public final Map<String, Application> applications = new HashMap<>();
 }

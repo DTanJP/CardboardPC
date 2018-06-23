@@ -26,54 +26,61 @@ public class MainApp {
 				WritingWorker.ClearFile(Config.OUTPUT_LOG);
 		}
 		println("["+Config.COMPUTER_NAME+"]: Initializing...");
+		
+		//Make sure everything is set up
 		if(SetupRequired()) {
 			println("["+Config.COMPUTER_NAME+"]: Creating environment...");
 			if(!Config.OS_DIR.exists())     Config.OS_DIR.mkdir();
 			if(!Config.DRIVER_DIR.exists()) Config.DRIVER_DIR.mkdir();
 			if(!Config.APP_DIR.exists())    Config.APP_DIR.mkdir();
-			if(!Config.LIBRARY_DIR.exists())Config.LIBRARY_DIR.mkdir();
 			println("["+Config.COMPUTER_NAME+"]: Ready to restart.");
 			return;
 		}
 		println("["+Config.COMPUTER_NAME+"]: Creating computer...");
-		
 		//Create computer instance
 		computer = Computer.getInstance();
-		
-		println("["+Config.COMPUTER_NAME+"]: Scanning for APIs...");
-		//Search for libraries
-		computer.ScanLibraries();
 		
 		println("["+Config.COMPUTER_NAME+"]: Scanning for OS...");
 		//Search for a OS
 		computer.ScanOS();
 		
+		println("["+Config.COMPUTER_NAME+"]: Scanning for Drivers...");
+		//Search for drivers
+		computer.ScanDrivers();
+		
+		println("["+Config.COMPUTER_NAME+"]: Scanning for Applications...");
+		//Search for applications
+		computer.ScanApplications();
+		
+		println("["+Config.COMPUTER_NAME+"]: Booting up OS...");
 		//Start the OS
 		computer.InitializeOS();
-		println("["+Config.COMPUTER_NAME+"]: Booting up OS...");
 		println("=========[Start]==========");
 		println("* Computer: "+Config.COMPUTER_NAME);
 		println("* Version: "+Config.VERSION);
 		println("* OS: "+computer.GetOSName());
-		println("* APIs: "+computer.GetLibrary().size());
+		println("* Drivers: "+computer.GetDrivers().size());
+		println("* Applications: "+computer.GetApplications().size());
 		println("==========================");
 		long lastLoopTime = System.nanoTime();
 		final long OPTIMAL_TIME = 1000000000 / Config.FPS_TARGET_RATE;
+	    int fps = 0;
 		try {
-			while(!computer.REQUEST_SHUTDOWN) {
-			    long now = System.nanoTime();
+			//Pass the control to OS to decide when to shutdown
+			while(!computer.GetOS().RequestShutDown()) {
+				long now = System.nanoTime();
 			    long updateLength = now - lastLoopTime;
 			    lastLoopTime = now;
 			    Config.delta = updateLength / ((double)OPTIMAL_TIME);
 			    
 			    // update the frame counter
 			    lastFpsTime += updateLength;
-			    Config.FPS++;
-			      
+			    fps++;
 			    // update our FPS counter if a second has passed since we last recorded
 			    if (lastFpsTime >= 1000000000) {
 			         lastFpsTime = 0;
-			         Config.FPS = 0;
+			         Config.FPS = fps;
+			         fps = 0;
 			    }
 			    
 			    //Update
@@ -86,8 +93,10 @@ public class MainApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		//Tell the OS to shutdown
 		computer.GetOS().Destruct();
 		println("==========[End]===========");
+		System.exit(0);
 	}
 	
 	/** Check to see if anything needs to be setup **/
@@ -98,8 +107,6 @@ public class MainApp {
 		if(!Config.DRIVER_DIR.exists() || !Config.DRIVER_DIR.isDirectory())
 			errors++;
 		if(!Config.APP_DIR.exists() || !Config.APP_DIR.isDirectory())
-			errors++;
-		if(!Config.LIBRARY_DIR.exists() || !Config.LIBRARY_DIR.isDirectory())
 			errors++;
 		return errors > 0;
 	}

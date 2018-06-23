@@ -29,8 +29,4 @@ public class FileUtil {
 	public static File[] AppFiles() {
 		return Config.APP_DIR.listFiles();
 	}
-	
-	public static File[] APIFiles() {
-		return Config.LIBRARY_DIR.listFiles();
-	}
 }
