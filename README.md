@@ -32,7 +32,7 @@ A. No
 
 Q. Does this come with a OS?
 
-A. Yes. Check out DustOS. A prototype OS created for this.
+A. Yes. Check out [DustOS](https://github.com/DTanJP/DustOS). A prototype OS created to work for this.
 
 Q. What's the difference between a driver and a application?
 
